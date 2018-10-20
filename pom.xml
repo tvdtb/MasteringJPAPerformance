@@ -1,0 +1,165 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.tvdtb.talk</groupId>
+	<artifactId>mastering-jpa-performance</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+
+		<maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+
+		<junit.jupiter.version>5.3.0</junit.jupiter.version>
+
+		<!-- 5.0.12 -->
+<!-- 		<hibernate.version>5.0.12.Final</hibernate.version> -->
+<!-- 		<hibernate.plugin.version>5.0.12.Final</hibernate.plugin.version> -->
+<!-- 		<hibernate.artifact>hibernate-entitymanager</hibernate.artifact> -->
+
+		<!-- 5.1.16 -->
+		<!-- <hibernate.version>5.1.16.Final</hibernate.version> -->
+		<!-- <hibernate.plugin.version>5.1.16.Final</hibernate.plugin.version> -->
+		<!-- <hibernate.artifact>hibernate-entitymanager</hibernate.artifact> -->
+
+		<!-- 5.2.17 -->
+		<!-- <hibernate.version>5.2.17.Final</hibernate.version> -->
+		<!-- <hibernate.plugin.version>5.2.17.Final</hibernate.plugin.version> -->
+		<!-- <hibernate.artifact>hibernate-core</hibernate.artifact> -->
+
+		<!-- 5.3.6 -->
+		<hibernate.version>5.3.6.Final</hibernate.version>
+		<hibernate.plugin.version>5.3.6.Final</hibernate.plugin.version>
+		<hibernate.artifact>hibernate-core</hibernate.artifact>
+	</properties>
+
+	<dependencies>
+		<!-- <dependency> -->
+		<!-- <groupId>org.hibernate.javax.persistence</groupId> -->
+		<!-- <artifactId>hibernate-jpa-2.1-api</artifactId> -->
+		<!-- <version>1.0.2.Final</version> -->
+		<!-- </dependency> -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<!-- <artifactId>hibernate-core</artifactId> -->
+			<artifactId>${hibernate.artifact}</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.5</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.197</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.derby/derby -->
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbyclient</artifactId>
+			<version>10.14.2.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc7</artifactId>
+			<version>12.1.0.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>2.3.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.0</version>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>instrumentation</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.hibernate.orm.tooling</groupId>
+						<artifactId>hibernate-enhance-maven-plugin</artifactId>
+						<version>${hibernate.plugin.version}</version>
+						<executions>
+							<execution>
+								<configuration>
+									<failOnError>true</failOnError>
+									<!-- setting this to true will break em.getReference -->
+									<!-- setting this to false will break fetch=Lazy -->
+									<enableLazyInitialization>false</enableLazyInitialization>
+									<!-- <enableLazyInitialization>true</enableLazyInitialization> -->
+									<enableDirtyTracking>true</enableDirtyTracking>
+									<enableAssociationManagement>true</enableAssociationManagement>
+									<enableExtendedEnhancement>true</enableExtendedEnhancement>
+								</configuration>
+								<goals>
+									<goal>enhance</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+</project>

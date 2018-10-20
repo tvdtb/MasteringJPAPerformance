@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="jpa-performance" transaction-type="RESOURCE_LOCAL">
+		<class>de.tvdtb.talk.mastering.jpa.performance.model.State</class>
+		<class>de.tvdtb.talk.mastering.jpa.performance.model.City</class>
+		<class>de.tvdtb.talk.mastering.jpa.performance.model.PostalCode</class>
+		<class>de.tvdtb.talk.mastering.jpa.performance.model.TestEntity</class>
+		<class>de.tvdtb.talk.mastering.jpa.performance.model.NamedEntity</class>
+		<class>de.tvdtb.talk.mastering.jpa.performance.model.CachedEntity</class>
+		<properties>
+
+			<!-- Log SQLs and statistics to console -->
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.generate_statistics" value="false" />
+			<!-- TODO: Optimization Step 2 modify batch size up to 100 -->
+			<property name="hibernate.jdbc.batch_size" value="1" />
+
+			<!-- configure schema creation - or execute those scripts manually -->
+			<property name="javax.persistence.schema-generation.database.action" value="create" />
+			<property name="javax.persistence.schema-generation.create-source" value="script" />
+			<property name="javax.persistence.schema-generation.create-script-source" value="META-INF/sql/create.sql" />
+			<property name="javax.persistence.sql-load-script-source" value="META-INF/sql/data.sql" />
+
+			<!-- configure database test connection (H2 In-Memory Database) -->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />
+			<property name="javax.persistence.jdbc.user" value="app" />
+			<property name="javax.persistence.jdbc.password" value="test" />
+
+			<!-- configure database test connection (Derby client) -->
+			<!-- <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/> -->
+			<!-- <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver" /> -->
+			<!-- <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/geodata;create=true" /> -->
+			<!-- <property name="javax.persistence.jdbc.user" value="app" /> -->
+			<!-- <property name="javax.persistence.jdbc.password" value="test" /> -->
+
+			<!-- configure database test connection (Oracle) -->
+<!-- 			<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/> -->
+<!-- 			<property name="javax.persistence.jdbc.driver" value="oracle.jdbc.driver.OracleDriver" /> -->
+<!-- 			<property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@dockervm:11521:xe" /> -->
+<!-- 			<property name="javax.persistence.jdbc.user" value="performance" /> -->
+<!-- 			<property name="javax.persistence.jdbc.password" value="test" /> -->
+
+			<!-- configure database test connection (mysql/mariadb) -->
+			<!-- https://mariadb.com/kb/en/library/about-mariadb-connector-j/#essential-options -->
+<!-- 			<property name="hibernate.dialect" value="org.hibernate.dialect.MariaDB10Dialect"/> -->
+<!-- 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" /> -->
+<!-- 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://dockervm:13306/kpv4?useServerPrepStmts=true&amp;useBatchMultiSend=true&amp;useBatchMultiSendNumber=1024" /> -->
+<!-- 			<property name="javax.persistence.jdbc.user" value="performance" /> -->
+<!-- 			<property name="javax.persistence.jdbc.password" value="test" /> -->
+		
+
+			<!-- This is for caching (ReadTest) -->
+			<property name="hibernate.cache.use_second_level_cache" value="true" />
+			<property name="hibernate.cache.use_query_cache" value="true"/>
+			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.EhCacheRegionFactory" />
+
+		</properties>
+
+	</persistence-unit>
+</persistence>
