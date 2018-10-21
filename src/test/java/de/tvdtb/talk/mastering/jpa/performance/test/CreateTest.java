@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.persistence.EntityManager;
@@ -46,7 +48,7 @@ public class CreateTest extends PersistenceTest {
 
 		SessionStatisticListener listener = addListener();
 
-		boolean lorem = true;
+		boolean lorem = false;
 		Map<String, State> states = new TreeMap<>();
 		Map<String, City> cities = new TreeMap<>();
 
