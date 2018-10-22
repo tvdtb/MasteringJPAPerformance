@@ -24,9 +24,9 @@ import javax.persistence.TableGenerator;
 public class PostalCode implements TechnicalId {
 	@Id
 // TODO Optimization Step 1	
-//	@GeneratedValue
-	@TableGenerator(name = "postalcode", initialValue = 1000, allocationSize = Constants.ALLOCATION_SIZE, table = "sequences", pkColumnName = "name", valueColumnName = "value")
-	@GeneratedValue(generator = "postalcode")
+	@GeneratedValue
+//	@TableGenerator(name = "postalcode", initialValue = 1000, allocationSize = Constants.ALLOCATION_SIZE, table = "sequences", pkColumnName = "name", valueColumnName = "value")
+//	@GeneratedValue(generator = "postalcode")
 //--	
 	long id;
 
