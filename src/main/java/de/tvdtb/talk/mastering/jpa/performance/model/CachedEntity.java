@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Cacheable(value = true)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 public class CachedEntity implements TechnicalId {
 	public static AtomicInteger getNameCounter = new AtomicInteger();

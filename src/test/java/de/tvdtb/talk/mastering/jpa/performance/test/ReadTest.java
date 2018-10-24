@@ -157,12 +157,16 @@ public class ReadTest extends PersistenceTest {
 		EntityManager em = getEntityManager();
 		CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get(0);
 		Cache cache = cacheManager.getCache(CachedEntity.class.getName());
-		cache.removeAll(); // clear cache, especially when running all tests in one run
+		if (cache != null)
+			cache.removeAll(); // clear cache, especially when running all tests in one run
 
 		CachedEntity entity = em.find(CachedEntity.class, 1L);
 		assertEquals(1, getStatistics().getEntityLoadCount(), "should have loaded once");
 		assertEquals(0, getStatistics().getSecondLevelCacheHitCount(), "should have had no hit");
-
+		
+		// at latest now, the cache is created
+		cache = cacheManager.getCache(CachedEntity.class.getName());
+		
 		newTransaction();
 		CachedEntity entity2 = em.find(CachedEntity.class, 1L);
 		assertEquals(1, getStatistics().getEntityLoadCount(), "should have loaded once");
@@ -187,12 +191,12 @@ public class ReadTest extends PersistenceTest {
 		CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get(0);
 		String newName = "changed name";
 
-		CachedEntity entity = em.find(CachedEntity.class, 1L);
+		CachedEntity entity = em.find(CachedEntity.class, 2L);
 		assertEquals(1, getStatistics().getEntityLoadCount(), "should have loaded once");
 		assertEquals(0, getStatistics().getSecondLevelCacheHitCount(), "should have had no hit");
 
 		newTransaction();
-		CachedEntity entity2 = em.find(CachedEntity.class, 1L);
+		CachedEntity entity2 = em.find(CachedEntity.class, 2L);
 		assertEquals(1, getStatistics().getEntityLoadCount(), "should have loaded once");
 		assertEquals(1, getStatistics().getSecondLevelCacheHitCount(), "should have had one hit");
 		entity2.setName(newName);
@@ -201,7 +205,7 @@ public class ReadTest extends PersistenceTest {
 
 		newTransaction();
 
-		CachedEntity entity3 = em.find(CachedEntity.class, 1L);
+		CachedEntity entity3 = em.find(CachedEntity.class, 2L);
 		assertEquals(1, getStatistics().getEntityLoadCount(), "should have loaded twice");
 		assertEquals(2, getStatistics().getSecondLevelCacheHitCount(), "should have had one hit");
 		assertEquals(newName, entity3.getName(), "name should still be changed");
@@ -212,7 +216,8 @@ public class ReadTest extends PersistenceTest {
 		EntityManager em = getEntityManager();
 		CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get(0);
 		Cache cache = cacheManager.getCache(CachedEntity.class.getName());
-		cache.removeAll(); // clear cache, especially when running all tests in one run
+		if (cache!=null)
+			cache.removeAll(); // clear cache, especially when running all tests in one run
 
 		em.find(CachedEntity.class, 1L);
 		em.find(CachedEntity.class, 2L);
