@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -30,7 +31,7 @@ public class City implements TechnicalId {
 
 	String name;
 
-	@ManyToOne // (fetch = FetchType.LAZY)
+	@ManyToOne //(fetch = FetchType.EAGER)
 	State state;
 
 	@OneToMany(mappedBy = "city")

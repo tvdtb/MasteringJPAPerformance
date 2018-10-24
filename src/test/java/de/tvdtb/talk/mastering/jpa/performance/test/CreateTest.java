@@ -94,16 +94,20 @@ public class CreateTest extends PersistenceTest {
 						em.persist(triple.getRight());
 					});
 //					.collect(Collectors.toList());
+//			System.out.println("States...");
 //			triples.stream().filter(triple -> isNew(triple.getLeft()))//
 //							.forEach(triple -> em.persist(triple.getLeft()));
+//			System.out.println("Cities...");
 //			triples.stream().filter(triple -> isNew(triple.getMiddle()))//
 //			                .forEach(triple -> em.persist(triple.getMiddle()));
+//			System.out.println("PostalCodes...");
 //			triples.stream().forEach(triple -> em.persist(triple.getRight()));
 // --
 		}
 
 		long flushTime = System.currentTimeMillis();
 
+		System.out.println("Flush ...");
 		em.flush();
 
 		long endTime = System.currentTimeMillis();
@@ -117,18 +121,8 @@ public class CreateTest extends PersistenceTest {
 				+ "statements = " + jdbcExecuteStatementCount + " batches = " + batchCount + " lorem="+lorem);
 
 		System.out.println("STATEMENTS=" + jdbcExecuteStatementCount);
-		assertFalse(jdbcExecuteStatementCount > 37087, "Optimize me! this is worse than my default");
-		assertFalse(jdbcExecuteStatementCount == 37087,
-				"Optimize me! This is the first result, toggle lines below TODO \"Optimization 1\"");
-		assertFalse(jdbcExecuteStatementCount > 35135,
-				"Optimize me! now go ahead and change increment in Constants.java");
-		assertFalse(jdbcExecuteStatementCount > 23893,
-				"Optimize me! There is still optimization possible ... up to 1000");
-		assertFalse(jdbcExecuteStatementCount > 22658,
-				"Optimize me! There is still optimization possible ... up to 1000");
-		assertFalse(batchCount > 146, "Optimize me! a jdbc batch size of up to 100 makes sense");
 		assertFalse(jdbcExecuteStatementCount > 8202,
-				"Optimize me! There is still optimization possible ... up to 1000");
+				"Optimize me! There is still optimization possible ... down to 32 statements in 16 batches");
 	}
 
 	private <V> V getOrCreate(Map<String, V> map, CSVRecord record, String keyColumn, Function<CSVRecord, V> function) {

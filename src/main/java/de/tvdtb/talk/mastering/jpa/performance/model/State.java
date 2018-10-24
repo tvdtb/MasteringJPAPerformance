@@ -14,7 +14,7 @@ import javax.persistence.TableGenerator;
 public class State implements TechnicalId {
 
 	@Id
-// TODO Optimization Step 1
+// TODO Optimization Step 1 
 	@GeneratedValue
 //	@TableGenerator(name = "state", initialValue = 1000, allocationSize = Constants.ALLOCATION_SIZE, table = "sequences", pkColumnName = "name", valueColumnName = "value")
 //	@GeneratedValue(generator = "state")

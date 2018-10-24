@@ -8,11 +8,12 @@
 		<class>de.tvdtb.talk.mastering.jpa.performance.model.TestEntity</class>
 		<class>de.tvdtb.talk.mastering.jpa.performance.model.NamedEntity</class>
 		<class>de.tvdtb.talk.mastering.jpa.performance.model.CachedEntity</class>
+		<class>de.tvdtb.talk.mastering.jpa.performance.model.CachedChild</class>
 		<properties>
 
 			<!-- Log SQLs and statistics to console -->
-			<property name="hibernate.show_sql" value="false" />
-			<property name="hibernate.generate_statistics" value="false" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.generate_statistics" value="true" />
 			<!-- TODO: Optimization Step 2 modify batch size up to 100 -->
 			<property name="hibernate.jdbc.batch_size" value="1" />
 
@@ -48,7 +49,7 @@
 <!-- 			<property name="hibernate.dialect" value="org.hibernate.dialect.MariaDB10Dialect"/> -->
 <!-- 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" /> -->
 <!-- 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://dockervm:13306/kpv4" /> -->
-<!-- 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://dockervm:13306/kpv4?useServerPrepStmts=true&amp;useBatchMultiSend=true&amp;useBatchMultiSendNumber=1024" /> -->
+<!-- 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://dockervm:13306/kpv4?useServerPrepStmts=true" /> -->
 <!-- 			<property name="javax.persistence.jdbc.user" value="performance" /> -->
 <!-- 			<property name="javax.persistence.jdbc.password" value="test" /> -->
 		

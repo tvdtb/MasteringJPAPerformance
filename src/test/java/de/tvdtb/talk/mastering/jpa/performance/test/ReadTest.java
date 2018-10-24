@@ -7,10 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.junit.jupiter.api.Test;
 
 import de.tvdtb.talk.mastering.jpa.performance.PersistenceTest;
+import de.tvdtb.talk.mastering.jpa.performance.SessionStatisticListener;
 import de.tvdtb.talk.mastering.jpa.performance.model.CachedEntity;
 import de.tvdtb.talk.mastering.jpa.performance.model.City;
 import de.tvdtb.talk.mastering.jpa.performance.model.PostalCode;
@@ -25,15 +27,44 @@ public class ReadTest extends PersistenceTest {
 	static List<String> codes = Arrays.asList( //
 			"1067", "1945", "4600", "6108", "10115" //
 			, "17033", "19273", "20095", "21465", "27568" //
-			, "32049", "34117", "51598", "63739", "64754"//
+			, "32049", "34117", "51598", "63739", "70565"//
 			, "66111");
 
 	@Test
 	public void testReadSimple() throws Exception {
 		EntityManager em = getEntityManager();
-		City c = em.find(City.class, 1001L);
+		City c = em.find(City.class, 4093L);
+		assertEquals(2, getStatistics().getEntityLoadCount(), "should be 2 loads"); // when lazy: 1
+		assertEquals(0, getStatistics().getEntityFetchCount(), "should be 0 fetches");
 	}
-	
+
+	@Test
+	public void testReadQuery() throws Exception {
+		SessionStatisticListener listener = super.addListener();
+		EntityManager em = getEntityManager();
+		City c = em.createQuery(//
+				"SELECT c FROM City c " //
+						+ "WHERE c.name=:name",
+				City.class)//
+				.setParameter("name", "Stuttgart")//
+				.getSingleResult();
+		assertEquals(2, listener.getJdbcExecuteStatementCount(), "should be 2 statements");
+	}
+
+	@Test
+	public void testReadFetchQuery() throws Exception {
+		SessionStatisticListener listener = super.addListener();
+		EntityManager em = getEntityManager();
+		City c = em.createQuery(//
+				"SELECT c FROM City c " //
+						+ "LEFT JOIN FETCH c.state " //
+						+ "WHERE c.name=:name",
+				City.class)//
+				.setParameter("name", "Stuttgart")//
+				.getSingleResult();
+		assertEquals(1, listener.getJdbcExecuteStatementCount(), "should be 1 statement");
+	}
+
 	@Test
 	public void testReadPostalCodes() throws Exception {
 		EntityManager em = getEntityManager();
@@ -89,6 +120,24 @@ public class ReadTest extends PersistenceTest {
 				, "TODO fails if bytecode instrumentation active and enableLazyInitialization=true in pom.xml\"");
 	}
 
+	@Test
+	public void testPing() throws Exception {
+		Query query = getEntityManager().createNativeQuery("SELECT * FROM NamedEntity WHERE 1=0");
+		query.getResultList();
+		int count = 100;
+		long totalTime = 0;
+		for (int i=0; i<count; i++) {
+			long startTime = System.nanoTime();
+			query.getResultList();
+			long endTime = System.nanoTime();
+			
+			totalTime += (endTime-startTime);
+		}
+		
+		System.out.println("average = "+(totalTime / count / 1000000d)+ "ms");
+		
+	}	
+	
 	@Test
 	public void testReadLazyAttribute() throws Exception {
 		EntityManager em = getEntityManager();
@@ -164,7 +213,7 @@ public class ReadTest extends PersistenceTest {
 		CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get(0);
 		Cache cache = cacheManager.getCache(CachedEntity.class.getName());
 		cache.removeAll(); // clear cache, especially when running all tests in one run
-		
+
 		em.find(CachedEntity.class, 1L);
 		em.find(CachedEntity.class, 2L);
 		em.find(CachedEntity.class, 3L);
@@ -214,6 +263,9 @@ public class ReadTest extends PersistenceTest {
 					.setHint("org.hibernate.cacheable", true) //
 					.setParameter("id", id) //
 					.getResultList();
+			for (CachedEntity ce:cached) {
+				ce.getChildren().size(); // load it
+			}
 
 			newTransaction();
 
@@ -221,8 +273,8 @@ public class ReadTest extends PersistenceTest {
 
 		System.out.println("Caches:");
 		Arrays.stream(cacheManager.getCacheNames()).forEach(name -> {
-			System.out.println(name + "-------------------------");
 			Cache cache = cacheManager.getCache(name);
+			System.out.println("Cache "+name + " size="+cache.getSize()+"-------------------------");
 			cache.getKeys().stream().forEach(key -> {
 				Element value = cache.get(key);
 				System.out.println("key=" + key + "\n = " + value.getObjectValue());
