@@ -8,4 +8,5 @@ drop table State;
 
 drop table TestEntity;
 drop table NamedEntity;
+drop table CachedChild;
 drop table CachedEntity;

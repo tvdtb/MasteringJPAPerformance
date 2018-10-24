@@ -1,22 +1,27 @@
 package de.tvdtb.talk.mastering.jpa.performance.model;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-@Cacheable(value=true)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cacheable(value = true)
 @Entity
 public class CachedEntity implements TechnicalId {
 	public static AtomicInteger getNameCounter = new AtomicInteger();
-	
+
 	@Id
 	long id;
 	String name;
+
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@OneToMany(mappedBy = "parent")
+	Collection<CachedChild> children;
 
 	public CachedEntity() {
 
@@ -41,6 +46,14 @@ public class CachedEntity implements TechnicalId {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Collection<CachedChild> getChildren() {
+		return children;
+	}
+
+	public void setChildren(Collection<CachedChild> children) {
+		this.children = children;
 	}
 
 }
