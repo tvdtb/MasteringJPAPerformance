@@ -9,6 +9,9 @@
 		<class>de.tvdtb.talk.mastering.jpa.performance.model.NamedEntity</class>
 		<class>de.tvdtb.talk.mastering.jpa.performance.model.CachedEntity</class>
 		<class>de.tvdtb.talk.mastering.jpa.performance.model.CachedChild</class>
+		
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		
 		<properties>
 
 			<!-- Log SQLs and statistics to console -->

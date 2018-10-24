@@ -8,10 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Cacheable(value = true)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 public class CachedEntity implements TechnicalId {
 	public static AtomicInteger getNameCounter = new AtomicInteger();
@@ -20,7 +17,6 @@ public class CachedEntity implements TechnicalId {
 	long id;
 	String name;
 
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@OneToMany(mappedBy = "parent")
 	Collection<CachedChild> children;
 
