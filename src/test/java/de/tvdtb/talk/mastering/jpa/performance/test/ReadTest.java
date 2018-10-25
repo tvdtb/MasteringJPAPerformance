@@ -24,7 +24,13 @@ import net.sf.ehcache.Element;
 
 public class ReadTest extends PersistenceTest {
 
-	static List<String> codes = Arrays.asList( //
+	static List<String> codes1 = Arrays.asList( //
+			"70173", "70174", "70176", "70178", "70180"//
+			, "70182", "70184", "70186", "70188", "70190"//
+			, "70191", "70192", "70193", "70195", "70197"//
+			, "70565");
+
+	static List<String> codes2 = Arrays.asList( //
 			"1067", "1945", "4600", "6108", "10115" //
 			, "17033", "19273", "20095", "21465", "27568" //
 			, "32049", "34117", "51598", "63739", "70565"//
@@ -66,15 +72,31 @@ public class ReadTest extends PersistenceTest {
 	}
 
 	@Test
-	public void testReadPostalCodes() throws Exception {
+	public void testReadPostalCodesGood() throws Exception {
 		EntityManager em = getEntityManager();
 
 		List<PostalCode> resultList = em//
 				.createNamedQuery("PostalCode.byCodes", PostalCode.class) //
-				.setParameter("codes", codes) //
+				.setParameter("codes", codes1) //
 				.getResultList();
 
-		System.out.println("codes is " + codes.size() + " items, query result is " + resultList.size());
+		System.out.println("codes is " + codes1.size() + " items, query result is " + resultList.size());
+		// Normal version: too many queries (16 fetches)
+		assertEquals(1, getStatistics().getQueryExecutionCount(), getStatistics().toString());
+		assertEquals(18, getStatistics().getEntityLoadCount(), getStatistics().toString());
+		assertEquals(1, getStatistics().getEntityFetchCount(), getStatistics().toString());
+	}
+
+	@Test
+	public void testReadPostalCodesBad() throws Exception {
+		EntityManager em = getEntityManager();
+
+		List<PostalCode> resultList = em//
+				.createNamedQuery("PostalCode.byCodes", PostalCode.class) //
+				.setParameter("codes", codes2) //
+				.getResultList();
+
+		System.out.println("codes is " + codes2.size() + " items, query result is " + resultList.size());
 		// Normal version: too many queries (16 fetches)
 		assertEquals(1, getStatistics().getQueryExecutionCount(), getStatistics().toString());
 		assertEquals(48, getStatistics().getEntityLoadCount(), getStatistics().toString());
@@ -86,14 +108,14 @@ public class ReadTest extends PersistenceTest {
 		EntityManager em = getEntityManager();
 
 		em.createNamedQuery("PostalCode.byCodesOptimized.prefetch", State.class) //
-				.setParameter("codes", codes) //
+				.setParameter("codes", codes2) //
 				.getResultList();
 		List<PostalCode> resultList = em//
 				.createNamedQuery("PostalCode.byCodesOptimized", PostalCode.class) //
-				.setParameter("codes", codes) //
+				.setParameter("codes", codes2) //
 				.getResultList();
 
-		System.out.println("codes is " + codes.size() + " items, query result is " + resultList.size());
+		System.out.println("codes is " + codes2.size() + " items, query result is " + resultList.size());
 		// Optimized version: 2 queries, 48 entities, no fetches!
 		assertEquals(2, getStatistics().getQueryExecutionCount(), getStatistics().toString());
 		assertEquals(48, getStatistics().getEntityLoadCount(), getStatistics().toString());
@@ -126,18 +148,18 @@ public class ReadTest extends PersistenceTest {
 		query.getResultList();
 		int count = 100;
 		long totalTime = 0;
-		for (int i=0; i<count; i++) {
+		for (int i = 0; i < count; i++) {
 			long startTime = System.nanoTime();
 			query.getResultList();
 			long endTime = System.nanoTime();
-			
-			totalTime += (endTime-startTime);
+
+			totalTime += (endTime - startTime);
 		}
-		
-		System.out.println("average = "+(totalTime / count / 1000000d)+ "ms");
-		
-	}	
-	
+
+		System.out.println("average = " + (totalTime / count / 1000000d) + "ms");
+
+	}
+
 	@Test
 	public void testReadLazyAttribute() throws Exception {
 		EntityManager em = getEntityManager();
@@ -163,10 +185,10 @@ public class ReadTest extends PersistenceTest {
 		CachedEntity entity = em.find(CachedEntity.class, 1L);
 		assertEquals(1, getStatistics().getEntityLoadCount(), "should have loaded once");
 		assertEquals(0, getStatistics().getSecondLevelCacheHitCount(), "should have had no hit");
-		
+
 		// at latest now, the cache is created
 		cache = cacheManager.getCache(CachedEntity.class.getName());
-		
+
 		newTransaction();
 		CachedEntity entity2 = em.find(CachedEntity.class, 1L);
 		assertEquals(1, getStatistics().getEntityLoadCount(), "should have loaded once");
@@ -216,7 +238,7 @@ public class ReadTest extends PersistenceTest {
 		EntityManager em = getEntityManager();
 		CacheManager cacheManager = CacheManager.ALL_CACHE_MANAGERS.get(0);
 		Cache cache = cacheManager.getCache(CachedEntity.class.getName());
-		if (cache!=null)
+		if (cache != null)
 			cache.removeAll(); // clear cache, especially when running all tests in one run
 
 		em.find(CachedEntity.class, 1L);
@@ -268,7 +290,7 @@ public class ReadTest extends PersistenceTest {
 					.setHint("org.hibernate.cacheable", true) //
 					.setParameter("id", id) //
 					.getResultList();
-			for (CachedEntity ce:cached) {
+			for (CachedEntity ce : cached) {
 				ce.getChildren().size(); // load it
 			}
 
@@ -279,7 +301,7 @@ public class ReadTest extends PersistenceTest {
 		System.out.println("Caches:");
 		Arrays.stream(cacheManager.getCacheNames()).forEach(name -> {
 			Cache cache = cacheManager.getCache(name);
-			System.out.println("Cache "+name + " size="+cache.getSize()+"-------------------------");
+			System.out.println("Cache " + name + " size=" + cache.getSize() + "-------------------------");
 			cache.getKeys().stream().forEach(key -> {
 				Element value = cache.get(key);
 				System.out.println("key=" + key + "\n = " + value.getObjectValue());
