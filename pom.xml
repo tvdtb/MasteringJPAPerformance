@@ -31,7 +31,7 @@
 		<!-- <hibernate.artifact>hibernate-core</hibernate.artifact> -->
 
 		<!-- 5.3.6 -->
-		<hibernate.version>5.3.6.Final</hibernate.version>
+		<hibernate.version>5.3.20.Final</hibernate.version>
 		<hibernate.plugin.version>5.3.6.Final</hibernate.plugin.version>
 		<hibernate.artifact>hibernate-core</hibernate.artifact>
 	</properties>
